@@ -13,42 +13,39 @@ import beans.Player;
 import services.PlayerService;
 
 /**
- * Servlet implementation class MapServlet
+ * Servlet implementation class PlayerServlet
  */
 @WebServlet("/PlayerServlet")
 public class PlayerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public PlayerServlet() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// Modelからページの表示に必要なデータを取得
+		
+		
 		ArrayList<Player> players = null;
-		PlayerService ps = new PlayerService();
-		players = ps.select();
+		try {
+			PlayerService ps = new PlayerService();
+			players = ps.select();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		request.setAttribute("players", players);
 
 		request.getRequestDispatcher("/player.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		// 今後、POSTで登録や更新処理を追加する予定の場合、ここに記述
+		// 現状はGETと同じく一覧表示にリダイレクト
 		doGet(request, response);
 	}
-
 }
