@@ -1,6 +1,7 @@
 package controllers;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -35,23 +36,35 @@ public class PlayerAddServlet extends HttpServlet {
 		request.getRequestDispatcher("/player_add.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	    request.setCharacterEncoding("UTF-8");
 
-	    String name = request.getParameter("name");
+	    // フォームから値を取得
+	    int countryId = Integer.parseInt(request.getParameter("country_id"));
+	    int uniformNum = Integer.parseInt(request.getParameter("uniform_num"));
 	    String position = request.getParameter("position");
+	    String name = request.getParameter("name");
+	    String club = request.getParameter("club");
+	    String birthStr = request.getParameter("birth");
+	    int height = Integer.parseInt(request.getParameter("height"));
+	    int weight = Integer.parseInt(request.getParameter("weight"));
 
-	    // 例: Player(int id, int countryId, int uniformNum, String position, String name, ...)
-	    Player player = new Player(0, 0, 0, position, name, "", null, 0, 0);  // 必要に応じて他の値も修正
 
+	    LocalDate birth = LocalDate.parse(birthStr);
+
+	    // Playerオブジェクトにすべての値をセット
+	    Player player = new Player(0, countryId, uniformNum, position, name, club, birth, height, weight);
+
+	    System.out.println("登録データ: " + player); 
+	    
+	    // 登録
 	    new PlayerService().insert(player);
 
-	    // コンテキストパスを使ってリダイレクト
+	    // リダイレクト
 	    response.sendRedirect(request.getContextPath() + "/PlayerServlet");
 	}
+
 
 
 }

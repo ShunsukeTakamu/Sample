@@ -21,6 +21,7 @@ public class PlayerService extends Service<Player> {
 				ResultSet rs = ps.executeQuery();)
 		{
 			while (rs.next()) {
+				Date birthDate = rs.getDate("birth");
 				players.add(
 						new Player(
 								rs.getInt("id"),
@@ -29,7 +30,7 @@ public class PlayerService extends Service<Player> {
 								rs.getString("position"),
 								rs.getString("name"),
 								rs.getString("club"),
-								rs.getDate("birth").toLocalDate(),
+								birthDate != null ? birthDate.toLocalDate() : null,
 								rs.getInt("height"),
 								rs.getInt("weight")));
 			}
@@ -42,28 +43,30 @@ public class PlayerService extends Service<Player> {
 
 	@Override
 	public Player selectById(int id) {
-		String sql = "select * from players where id = ?;";
+		String sql = "SELECT * FROM players WHERE id = ?";
 
 		Player player = null;
 
 		try (
 			Connection con = Db.open();
-			PreparedStatement ps = con.prepareStatement(sql);)
-		{
+			PreparedStatement ps = con.prepareStatement(sql);
+		) {
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 
 			if (rs.next()) {
+				Date birthDate = rs.getDate("birth");
 				player = new Player(
-						rs.getInt("id"),
-						rs.getInt("country_id"),
-						rs.getInt("uniform_num"),
-						rs.getString("position"),
-						rs.getString("name"),
-						rs.getString("club"),
-						rs.getDate("birth").toLocalDate(),
-						rs.getInt("height"),
-						rs.getInt("weight"));
+					rs.getInt("id"),
+					rs.getInt("country_id"),
+					rs.getInt("uniform_num"),
+					rs.getString("position"),
+					rs.getString("name"),
+					rs.getString("club"),
+					birthDate != null ? birthDate.toLocalDate() : null,
+					rs.getInt("height"),
+					rs.getInt("weight")
+				);
 			}
 		} catch (Exception se) {
 			se.printStackTrace();
@@ -76,7 +79,7 @@ public class PlayerService extends Service<Player> {
 	public int insert(Player object) {
 		String sql = "insert into players(country_id, uniform_num, position, name, club, birth, height, weight) values (?,?,?,?,?,?,?,?);";
 		int id = 0;
-
+		
 		try (
 				Connection con = Db.open();
 				PreparedStatement ps = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);)
@@ -99,6 +102,7 @@ public class PlayerService extends Service<Player> {
 			se.printStackTrace();
 		}
 		return id;
+		
 	}
 
 	@Override
