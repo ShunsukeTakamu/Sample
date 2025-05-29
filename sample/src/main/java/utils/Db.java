@@ -9,6 +9,14 @@ import javax.naming.NamingException;
 public class Db {
 	
 	public static Connection open() throws SQLException, NamingException {
+	    try {
+	        // 明示的に MariaDB JDBC ドライバをロード
+	        Class.forName("org.mariadb.jdbc.Driver");
+	    } catch (ClassNotFoundException e) {
+	        System.out.println("JDBCドライバが見つかりません: " + e.getMessage());
+	        throw new SQLException("JDBCドライバが見つかりません", e);
+	    }
+
 	    Connection con = null;
 	    try {
 	        con = DriverManager.getConnection("jdbc:mariadb://localhost:3306/sample2", "root", "root");
@@ -20,16 +28,4 @@ public class Db {
 	    return con;
 	}
 
-
-	public static void close(Connection c) throws SQLException {
-		if (c != null) {
-			try {
-				c.close();
-			} catch (SQLException e) {
-				System.out.println("接続のクローズに失敗しました: " + e.getMessage());
-				e.printStackTrace();  // 詳細なスタックトレースを表示
-				throw e;
-			}
-		}
-	}
 }
